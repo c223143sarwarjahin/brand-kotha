@@ -1,0 +1,26 @@
+FROM node:24-alpine AS base
+
+RUN npm install -g pnpm
+
+WORKDIR /app
+
+# Install dependencies based on pnpm-lock
+COPY package.json pnpm-workspace.yaml pnpm-lock.yaml* ./
+COPY apps/web/package.json ./apps/web/
+COPY packages/api-client/package.json ./packages/api-client/
+
+RUN pnpm install --frozen-lockfile || pnpm install
+
+# Build stage
+FROM base AS runner
+
+WORKDIR /app
+
+COPY . .
+
+EXPOSE 3000
+
+ENV PORT=3000
+ENV HOSTNAME="0.0.0.0"
+
+CMD ["pnpm", "--filter", "@brandkotha/web", "dev"]

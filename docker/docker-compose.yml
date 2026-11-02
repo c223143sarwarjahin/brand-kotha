@@ -1,0 +1,84 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: brandkotha-postgres
+    restart: always
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-brandkotha_user}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-brandkotha_secret_password}
+      POSTGRES_DB: ${POSTGRES_DB:-brandkotha_db}
+    ports:
+      - "${POSTGRES_PORT:-5432}:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./postgres/init-extensions.sql:/docker-entrypoint-initdb.d/init-extensions.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-brandkotha_user} -d ${POSTGRES_DB:-brandkotha_db}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    container_name: brandkotha-redis
+    restart: always
+    ports:
+      - "${REDIS_PORT:-6379}:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+  api:
+    build:
+      context: ../apps/api
+      dockerfile: Dockerfile.api
+    container_name: brandkotha-api
+    restart: unless-stopped
+    env_file:
+      - ../.env
+    environment:
+      DATABASE_URL: postgresql+asyncpg://${POSTGRES_USER:-brandkotha_user}:${POSTGRES_PASSWORD:-brandkotha_secret_password}@postgres:5432/${POSTGRES_DB:-brandkotha_db}
+      SYNC_DATABASE_URL: postgresql://${POSTGRES_USER:-brandkotha_user}:${POSTGRES_PASSWORD:-brandkotha_secret_password}@postgres:5432/${POSTGRES_DB:-brandkotha_db}
+      REDIS_URL: redis://redis:6379/0
+      CELERY_BROKER_URL: redis://redis:6379/1
+      CELERY_RESULT_BACKEND: redis://redis:6379/2
+    ports:
+      - "8000:8000"
+    volumes:
+      - ../apps/api:/app
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+
+  web:
+    build:
+      context: ..
+      dockerfile: apps/web/Dockerfile.web
+    container_name: brandkotha-web
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    env_file:
+      - ../.env
+    volumes:
+      - ../apps/web:/app/apps/web
+      - ../packages:/app/packages
+      - /app/apps/web/node_modules
+    depends_on:
+      - api
+    command: pnpm --filter @brandkotha/web dev
+
+volumes:
+  postgres_data:
+    name: brandkotha_postgres_data
+  redis_data:
+    name: brandkotha_redis_data

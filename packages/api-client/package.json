@@ -1,0 +1,19 @@
+{
+  "name": "@brandkotha/api-client",
+  "version": "1.0.0",
+  "private": true,
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "scripts": {
+    "build": "tsc",
+    "typecheck": "tsc --noEmit",
+    "clean": "rm -rf dist"
+  },
+  "dependencies": {
+    "openapi-fetch": "^0.13.4"
+  },
+  "devDependencies": {
+    "openapi-typescript": "^7.6.1",
+    "typescript": "^5.7.3"
+  }
+}

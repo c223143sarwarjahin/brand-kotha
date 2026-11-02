@@ -1,0 +1,22 @@
+{
+  "name": "brand-kotha-monorepo",
+  "version": "1.0.0",
+  "private": true,
+  "description": "BrandKotha — Creator & Brand Freelancing Marketplace Monorepo",
+  "author": "Team A (Kalpona Koly, Mahir Tajuar Akash, Rawfun Shovon, Sarwar Jahin)",
+  "packageManager": "pnpm@12.16.1",
+  "scripts": {
+    "dev": "turbo run dev",
+    "build": "turbo run build",
+    "lint": "turbo run lint",
+    "typecheck": "turbo run typecheck",
+    "test": "turbo run test",
+    "clean": "turbo run clean && rm -rf node_modules",
+    "codegen": "bash scripts/generate-client.sh"
+  },
+  "devDependencies": {
+    "turbo": "^2.4.4",
+    "typescript": "^5.7.3",
+    "prettier": "^3.5.2"
+  }
+}
