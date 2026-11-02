@@ -10,7 +10,7 @@
 
 BrandKotha is organized as a decoupled, polyglot monorepo using **Turborepo** and **pnpm workspaces** for TypeScript/Node.js, with native virtual environments for the Python FastAPI backend.
 
-```
+```text
 brand-kotha/
 ├── apps/
 │   ├── api/                 # Python 3.12+ FastAPI Modular Monolith
@@ -19,6 +19,9 @@ brand-kotha/
 │   └── api-client/          # Auto-generated typed TypeScript SDK (@brandkotha/api-client)
 ├── docker/                  # Local PostgreSQL 16 & Redis 7 container configs
 ├── docs/                    # PRD, TRD v2.0, Architecture blueprints & ER diagrams
+│   ├── BrandKotha_PRD_and_TRD_v2.md
+│   ├── ARCHITECTURE.md
+│   └── BrandKotha_PRD_and_TRD_v2.pdf
 ├── scripts/                 # Bootstrap & code generation scripts
 ├── Makefile                 # Standard developer command interface
 └── turbo.json               # Monorepo build pipeline & dependency graph
@@ -90,3 +93,20 @@ Primary keys utilize time-ordered **UUIDv7** for indexing locality and zero ID-g
 * **Payment Webhook Verification:** Server-to-server HMAC-SHA256 signature and `val_id` verification against gateway servers.
 * **Rate Limiting:** Redis sliding-window limiters: 5 req/min on registration, 10 req/min on login, 30 pitches/day per creator.
 
+---
+
+## 6. Implementation Status & Upcoming Sprint Roadmap
+
+### Current Status (Baseline Scaffolding Complete)
+| Component | Implementation Status | Notes |
+| :--- | :--- | :--- |
+| **Database Schema** | **Applied & Active** | Alembic migration `001_initial_schema.py` executed on PostgreSQL 16. |
+| **Matching Engine** | **Completed & Tested** | Pure Python 50/25/25 scoring engine verified with unit test suite. |
+| **Health & Core API** | **Active** | `/api/v1/health/live` and `/ready` endpoints returning HTTP 200. |
+| **Web Frontend** | **Scaffolded (Static Mockups)** | Next.js 15 pages render static UI mockups to validate mobile layout & UX. |
+| **Docker Services** | **Operational** | PostgreSQL 16 and Redis 7 healthy in Docker Desktop. |
+
+### Next Sprint Tasks
+1. **Module `auth`:** Implement `POST /api/v1/auth/register`, `POST /api/v1/auth/login`, and session cookie rotation.
+2. **Module `campaigns` & `pitches`:** Implement campaign CRUD, single-pitch submission invariant, and Brand Accept/Decline state transitions.
+3. **Frontend Integration:** Wire TanStack Query v5 to consume live FastAPI endpoints, replacing static page mockups with PostgreSQL-backed data.
