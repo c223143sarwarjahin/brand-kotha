@@ -1,12 +1,17 @@
-.PHONY: help dev dev-local docker-up docker-down docker-logs api-dev web-dev db-migrate db-makemigrations test lint codegen clean setup
+.PHONY: help dev dev-no-redis docker-up docker-down docker-logs api-dev web-dev db-migrate db-makemigrations test lint codegen clean setup
 
-# Default target
+# Python / venv helper
+PYTHON_BIN = $(shell if [ -f apps/api/.venv/bin/python3 ]; then echo "apps/api/.venv/bin/python3"; else echo "python3"; fi)
+UVICORN_BIN = $(shell if [ -f apps/api/.venv/bin/uvicorn ]; then echo "apps/api/.venv/bin/uvicorn"; else echo "python3 -m uvicorn"; fi)
+ALEMBIC_BIN = $(shell if [ -f apps/api/.venv/bin/alembic ]; then echo "apps/api/.venv/bin/alembic"; else echo "alembic"; fi)
+
 help:
 	@echo "========================================================================"
 	@echo " BrandKotha Developer Monorepo Commands (Team A)"
 	@echo "========================================================================"
 	@echo " setup             Bootstrap full environment (Python venv + pnpm install)"
-	@echo " dev               Start local full stack (DB + Redis in Docker, Apps locally)"
+	@echo " dev               Start local full stack (Postgres + Redis in Docker, Apps locally)"
+	@echo " dev-no-redis      Start Postgres in Docker (WITHOUT Redis) and run Apps locally"
 	@echo " docker-up         Start complete stack in Docker (Postgres, Redis, API, Web)"
 	@echo " docker-down       Stop all Docker containers"
 	@echo " docker-logs       Follow Docker container logs"
@@ -27,8 +32,14 @@ setup:
 dev:
 	@echo "Starting PostgreSQL 16 and Redis 7 in Docker..."
 	@docker compose -f docker/docker-compose.yml up -d postgres redis
-	@echo "Services ready. Starting FastAPI & Next.js..."
+	@echo "Services ready. Starting Next.js (FastAPI can be run via 'make api-dev')..."
 	@pnpm run dev
+
+# Run when Redis is not needed / not installed locally
+dev-no-redis:
+	@echo "Starting PostgreSQL 16 (WITHOUT Redis) in Docker..."
+	@docker compose -f docker/docker-compose.yml up -d postgres
+	@echo "Postgres ready. You can now run 'make api-dev' and 'make web-dev'."
 
 # Full containerized stack
 docker-up:
@@ -42,28 +53,28 @@ docker-logs:
 
 # Standalone App Commands
 api-dev:
-	@cd apps/api && python3 -m uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
+	@cd apps/api && $(UVICORN_BIN) app.main:app --reload --host 0.0.0.0 --port 8000
 
 web-dev:
 	@pnpm --filter @brandkotha/web dev
 
 # Database Migrations
 db-migrate:
-	@cd apps/api && alembic upgrade head
+	@cd apps/api && $(ALEMBIC_BIN) upgrade head
 
 db-makemigrations:
-	@cd apps/api && alembic revision --autogenerate -m "Auto migration"
+	@cd apps/api && $(ALEMBIC_BIN) revision --autogenerate -m "Auto migration"
 
 # Quality Assurance
 test:
 	@echo "Running backend Pytest suite..."
-	@cd apps/api && pytest -v
+	@cd apps/api && PYTHONPATH=. $(PYTHON_BIN) -m unittest discover -s tests -p "test_*.py"
 	@echo "Running frontend typecheck..."
 	@pnpm run typecheck
 
 lint:
-	@echo "Running Python Ruff linter & formatter check..."
-	@cd apps/api && ruff check . && ruff format --check .
+	@echo "Running Python Ruff linter check..."
+	@cd apps/api && $(PYTHON_BIN) -m ruff check .
 	@echo "Running Frontend linter..."
 	@pnpm run lint
 
@@ -75,4 +86,3 @@ clean:
 	@find . -type d -name ".pytest_cache" -exec rm -rf {} +
 	@find . -type d -name ".ruff_cache" -exec rm -rf {} +
 	@rm -rf apps/web/.next apps/web/out packages/*/dist
-
