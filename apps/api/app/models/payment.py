@@ -56,3 +56,4 @@ class Payment(Base, UUIDv7PKMixin, TimestampMixin):
         UniqueConstraint("gateway_provider", "gateway_trx_id", name="uq_gateway_provider_trx_id"),
         Index("idx_payments_user_status", "user_id", "status", "created_at"),
     )
+

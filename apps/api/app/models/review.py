@@ -41,3 +41,4 @@ class Review(Base, UUIDv7PKMixin, TimestampMixin):
         CheckConstraint("stars >= 1 AND stars <= 5", name="check_stars_range"),
         CheckConstraint("from_user_id <> to_user_id", name="check_self_review_prevented"),
     )
+

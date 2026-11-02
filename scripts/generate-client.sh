@@ -12,3 +12,4 @@ with open('packages/api-client/openapi.json', 'w') as f:
 echo "--> Generating TypeScript client schemas from OpenAPI..."
 pnpm --filter @brandkotha/api-client run build || true
 echo "--> API Client generation completed successfully!"
+

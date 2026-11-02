@@ -56,3 +56,4 @@ async def root():
         "docs": "/docs",
         "status": "healthy"
     }
+

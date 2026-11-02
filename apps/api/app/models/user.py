@@ -41,3 +41,4 @@ class User(Base, UUIDv7PKMixin, TimestampMixin):
     __table_args__ = (
         Index("idx_users_role_status", "role", "status"),
     )
+

@@ -66,3 +66,4 @@ class Profile(Base):
         CheckConstraint("rate_or_budget_bdt >= 0", name="check_positive_rate"),
         Index("idx_profiles_discovery", "niche", "platform", "rate_or_budget_bdt", followers_count.desc()),
     )
+

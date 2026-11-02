@@ -40,3 +40,4 @@ class AuditLog(Base, UUIDv7PKMixin, TimestampMixin):
     __table_args__ = (
         Index("idx_audit_logs_created_actor", "created_at", "actor_id"),
     )
+

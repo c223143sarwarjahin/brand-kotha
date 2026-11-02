@@ -23,3 +23,4 @@ export const Badge: React.FC<BadgeProps> = ({ className, variant = "default", ch
     </span>
   );
 };
+

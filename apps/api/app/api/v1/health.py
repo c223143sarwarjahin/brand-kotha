@@ -18,3 +18,4 @@ async def liveness_probe():
 async def readiness_probe():
     # In a fully connected cluster, this probes PostgreSQL and Redis
     return HealthResponse(status="ready")
+

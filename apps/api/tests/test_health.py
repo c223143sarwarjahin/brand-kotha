@@ -23,3 +23,4 @@ async def test_root_endpoint():
         data = response.json()
         assert data["name"] == "BrandKotha"
         assert data["status"] == "healthy"
+

@@ -69,3 +69,4 @@ class Message(Base, UUIDv7PKMixin):
     __table_args__ = (
         Index("idx_messages_unread", "conversation_id", "sender_id", postgresql_where=(read_at == None)),
     )
+

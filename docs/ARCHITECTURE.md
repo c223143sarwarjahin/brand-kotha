@@ -89,3 +89,4 @@ Primary keys utilize time-ordered **UUIDv7** for indexing locality and zero ID-g
 * **Password Security:** Argon2id (memory cost 64 MiB, 3 iterations, 4 parallelism threads).
 * **Payment Webhook Verification:** Server-to-server HMAC-SHA256 signature and `val_id` verification against gateway servers.
 * **Rate Limiting:** Redis sliding-window limiters: 5 req/min on registration, 10 req/min on login, 30 pitches/day per creator.
+

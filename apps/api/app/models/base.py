@@ -27,3 +27,4 @@ class UUIDv7PKMixin:
         default=uuid.uuid4,
         index=True,
     )
+

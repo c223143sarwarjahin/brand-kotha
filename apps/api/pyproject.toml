@@ -37,3 +37,4 @@ ignore = ["B008"]
 asyncio_mode = "auto"
 testpaths = ["tests"]
 python_files = ["test_*.py"]
+

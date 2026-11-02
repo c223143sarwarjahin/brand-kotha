@@ -54,3 +54,4 @@ class Application(Base, UUIDv7PKMixin, TimestampMixin):
         Index("idx_apps_campaign_status", "campaign_id", "status"),
         Index("idx_apps_creator", "creator_id", "created_at"),
     )
+

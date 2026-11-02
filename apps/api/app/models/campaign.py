@@ -59,3 +59,4 @@ class Campaign(Base, UUIDv7PKMixin, TimestampMixin):
         CheckConstraint("budget_bdt >= 0", name="check_positive_budget"),
         Index("idx_campaigns_search", "status", "category", "platform", budget_bdt.desc()),
     )
+

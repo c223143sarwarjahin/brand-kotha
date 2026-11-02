@@ -18,3 +18,4 @@ export const useAuthStore = create<AuthState>((set) => ({
   setAuth: (token, role, user) => set({ token, role, user, isAuthenticated: true }),
   logout: () => set({ token: null, role: null, user: null, isAuthenticated: false }),
 }));
+

@@ -32,3 +32,4 @@ async def problem_exception_handler(request: Request, exc: ProblemDetailExceptio
         **exc.extra,
     }
     return JSONResponse(status_code=exc.status_code, content=payload)
+
